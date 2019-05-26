@@ -1,0 +1,146 @@
+# =======================================选择模型的各部分组件===============================================
+use_datasets: cifar10
+epoch: 302
+datasets:
+  ChineseString:
+    name: ChineseString
+    data_augmentation: Frue
+  ILSVRC2017:
+    name: ILSVRC2017
+    data_augmentation: True
+  cifar10:
+    name: cifar10
+    data_augmentation: True
+    validation_split: 0.1
+    batch_size: 32
+    shuffle: 128
+  cifar100:
+    name: cifar100
+    data_augmentation: True
+    validation_split: 0.1
+    batch_size: 32
+    shuffle: 128
+
+use_net: darknet53v2
+net:
+  yolo:
+    name: yolo
+    S: 7
+    B: 2
+    classes: 20
+    input_shape:
+      - 416
+      - 416
+      - 3
+    label_shape:
+      - 7
+      - 7
+      - 30
+  crnn:
+    name: crnn
+    input_shape:
+      - 32
+      - 280
+      - 3
+    label_shape:
+      - 10
+  darknet53:
+    name: darknet53
+    use_depthwise: True
+    classes: 10
+    include_top: True
+    input_shape:
+      - 32
+      - 32
+      - 3
+    label_shape:
+      - 1
+    pooling: avg
+  darknet53v2:
+    name: darknet53v2
+    classes: 10
+    include_top: True
+    input_shape:
+      - 32
+      - 32
+      - 3
+    label_shape:
+      - 1
+    pooling: avg
+
+
+use_optimizer: Adam
+optimizer:
+   SGD:
+     name: SGD
+     lr: 0.01
+     momentum: 0.9
+
+   Adam:
+     name: Adam
+     lr: 0.001
+
+
+use_loss: sparse_categorical_crossentropy
+loss:
+  ctc_loss:
+    name: ctc_loss
+  sparse_categorical_crossentropy:
+    name: sparse_categorical_crossentropy
+    label_smoothing: 0.001
+  yolo_loss:
+    name: yolo_loss
+
+
+use_metric: SparseCategoricalAccuracy
+metric:
+  crnn_metric:
+    name: crnn_metric
+  SparseCategoricalAccuracy:
+    name: SparseCategoricalAccuracy
+
+
+use_callback:
+  - ModelCheckpoint
+  - TensorBoard
+  - LearningRateScheduler
+callback:
+  LearningRateScheduler:
+    name: LearningRateScheduler
+    schedule: Cosine_Learning_Rate_Decay #可以选择：Cosine_Learning_Rate_Decay
+  ModelCheckpoint:
+    name: ModelCheckpoint
+    filepath: None #可以不写，默认使用设置的路径
+    monitor: val_loss
+    verbose: 0
+    save_best_only: False
+    save_weights_only: True
+    mode: auto
+    period: 1
+  EarlyStopping:
+    name: EarlyStopping
+    monitor: val_loss
+    min_delta: 0
+    patience: 0
+    verbose: 0
+    mode: auto
+    baseline: None
+    restore_best_weights: False
+  TensorBoard:
+    name: TensorBoard
+    log_dir: None #可以不写，默认使用设置的路径
+    histogram_freq: 1
+    write_graph: True
+    write_images: True
+    update_freq: epoch
+    profile_batch: 2
+  CSVLogger:
+    name: CSVLogger
+
+regularization:
+  l2: True
+  l1: False
+#  数据增强、加入噪声、提前停止、多任务训练
+
+save_model_dir: D:\jjj\一些代码\jjj\weights\darknetv2_
+save_log_dir: D:\jjj\一些代码\jjj\log\darknetv2_
